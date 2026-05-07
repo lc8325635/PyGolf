@@ -194,7 +194,8 @@ Challenge.add(1, 9,
     `Sum a List`,
     `Print the sum of [1, 2, 3, 4, 5].`,
     function(i) {
-        return this.match(i, [ 15 ])
+        i = i.map(x => parseInt(x, 10))
+        return this.match(i, [15])
     }
 )
 
@@ -205,7 +206,7 @@ Challenge.add(1, 41,
     Print them in order from shortest to longest.
     `,
     function(i) {
-        return this.match(i, [[ "Jane", "Hanna", "Andrew", "Phillip",  "Victoria", "Frederick" ]]);
+        return this.match(i, [ "Jane", "Hanna", "Andrew", "Phillip",  "Victoria", "Frederick" ]);
     }
 )
 
