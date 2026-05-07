@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Editor</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.13.2/brython.min.js" integrity="sha512-IKveykv1kbclOAQgkHa8FlDamEXz4VXLCfQFjaWSou9/+pRVt1vvhnwJYUYgMDkm2OFSRpQBWZKf3C9YpNDM9g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.13.2/brython_stdlib.js" integrity="sha512-SXec+h4TdwyIX7DdnmiQz5yzpByFNudfMikGgmXYa9TErthRmkws/JxIri/0xDRDLr3S/1nWNRc+M+oFlprzpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Challenge Panel -->
+        <div class="challenge-panel" id="challengePanel">
+            <div class="challenge-header">
+                <button id="btn-prev">←</button>
+                <span id="challengeTitle">Challenge 1</span>
+                <button id="btn-next">→</button>
+            </div>
+            <div id="challengeDesc" class="challenge-desc"></div>
+            <div class="challenge-limits">
+                <span>Max Lines: <strong id="maxLines">–</strong></span> | 
+                <span>Max Chars: <strong id="maxChars">–</strong></span>
+            </div>
+            <div class="medals" id="medals">
+                <span class="medal bronze" title="Bronze: Correct output">🥉</span>
+                <span class="medal silver" title="Silver: + Within line OR char limit">🥈</span>
+                <span class="medal gold" title="Gold: + Within both limits">🥇</span>
+            </div>
+        </div>
+        
+        <header>
+            <h1>Your Python Program</h1>
+            <div class="stats" id="statsEl">Lines: 0 | Characters: 0</div>
+        </header>
+        
+        <div class="toolbar">
+            <button id="btn-clear">Clear</button>
+            <button id="btn-save">Save</button>
+            <button id="btn-load">Load</button>
+            <button id="btn-run">Run</button>
+            <input type="file" id="fileInput" accept=".py" style="display:none;">
+        </div>
+        <div id="editor"></div>
+
+        <div class="terminal" id="terminal"></div>
+    </div>
+    <script src="script.js"></script>
+    <script type="text/python">
+from browser import document, window
+import sys
+
+editor = window.editor
+terminal = document["terminal"]
+
+class TerminalWriter:
+    def write(self, text):
+        terminal.text += text
+        terminal.scrollTop = terminal.scrollHeight
+        if "Traceback" in text or "Error" in text:
+            terminal.classList.add("error")
+    def flush(self):
+        pass
+
+def run_code(ev):
+    terminal.text = ""
+    terminal.classList.remove("error")
+    code = editor.getValue()
+
+    orig_out, orig_err = sys.stdout, sys.stderr
+    tw = TerminalWriter()
+    sys.stdout = sys.stderr = tw
+
+    try:
+        exec(code, {"__name__": "__main__"})
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        sys.stdout, sys.stderr = orig_out, orig_err
+        window.challenge.validate(code, terminal.text)
+
+document["btn-run"].bind("click", run_code)
+    </script>
+    <script>brython()</script>
+</body>
+</html>

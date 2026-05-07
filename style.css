@@ -1,0 +1,88 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.container {
+    width: 92%;
+    max-width: 1100px;
+    height: 88vh;
+    display: flex;
+    flex-direction: column;
+    background: #252536;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+header {
+    padding: 14px 20px;
+    background: #181825;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #313244;
+}
+header h1 { font-size: 1.15rem; font-weight: 600; color: #89b4fa; }
+
+.challenge-panel {
+    background: #282a36; color: #f8f8f2; padding: 12px; border-radius: 6px;
+    margin: 10px 0; border: 1px solid #444;
+}
+.challenge-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.challenge-desc { font-size: 0.95em; margin-bottom: 8px; line-height: 1.4; }
+.challenge-limits { font-size: 0.9em; color: #bd93f9; margin-bottom: 8px; }
+.medals { display: flex; gap: 8px; }
+.medal { opacity: 0.3; transition: opacity 0.2s; }
+.medal.earned { opacity: 1; filter: drop-shadow(0 0 4px currentColor); }
+.medal.bronze.earned { color: #cd7f32; }
+.medal.silver.earned { color: #c0c0c0; }
+.medal.gold.earned { color: #ffd700; }
+
+.stats { font-size: 0.8rem; color: #a6adc8; font-family: monospace; }
+.toolbar {
+    padding: 10px 20px;
+    background: #1e1e2e;
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid #313244;
+}
+button {
+    padding: 7px 14px;
+    border: none;
+    border-radius: 5px;
+    background: #313244;
+    color: #cdd6f4;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.15s;
+}
+button:hover { background: #45475a; }
+
+.toolbar button#btn-run { background: #a6e3a1; color: #1e1e2e; font-weight: 500; }
+.toolbar button#btn-run:hover { background: #94e2d5; }
+
+#editor { flex: 1; overflow: hidden; min-height: 10rem; }
+.CodeMirror {
+    height: 100%;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    background: #1e1e2e;
+}
+.terminal {
+    height: 180px;
+    background: #11111b;
+    padding: 12px 16px;
+    overflow-y: auto;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    color: #a6e3a1;
+    border-top: 2px solid #313244;
+    white-space: pre-wrap;
+    line-height: 1.4;
+}
+.terminal.error { color: #f38ba8; }

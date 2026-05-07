@@ -1,0 +1,198 @@
+const challenges = []
+let myStorage = {}
+let currentChallengeIndex = 0
+
+class Challenge {
+    static add(maxLines, maxChars, title, description, f) {
+        const id = challenges.length + 1
+        const instance = new Challenge(id, title, description, maxLines, maxChars, f)
+        challenges.push(instance)
+        return instance
+    }
+    
+    constructor(id, title, description, maxLines, maxChars, f) {
+        this.id = id
+        this.title = title
+        this.description = description
+        this.maxLines = maxLines
+        this.maxChars = maxChars
+        this.f = f
+        this.code = ""
+        this.achievement = 0
+    }
+
+    load() {
+        let data =             {
+            code: "",
+            achievement: 0
+        }
+        const json = localStorage.getItem(`challenge-${this.id}`)
+        try {
+            if (json) data = JSON.parse(json)
+        } catch (e) {}
+        this.code = data.code;
+        this.achievement = data.achievement
+    }
+
+    save() {
+        localStorage.setItem(`challenge-${this.id}`, JSON.stringify({
+            code: this.code,
+            achievement: this.achievement
+        }))
+    }
+
+    display() {
+        editor.setValue(this.code)
+        document.getElementById('challengeTitle').textContent = `Challenge ${this.id}: ${this.title}`;
+        document.getElementById('challengeDesc').textContent = this.description;
+        document.getElementById('maxLines').textContent = this.maxLines;
+        document.getElementById('maxChars').textContent = this.maxChars;
+        document.querySelectorAll('#medals .medal').forEach((el, i) => {
+            el.classList.toggle('earned', i < this.achievement);
+        });
+    }
+
+    setAchievement(achievement) {
+        achievement = Math.max(this.achievement, achievement)
+        this.achievement = achievement
+    }
+
+    validate(code, text) {
+        this.code = code
+        text = text.toString().split(/\n/)
+        text = text.map(line => line.trim())
+        while (text.length > 0 && text[text.length - 1] == "") text.pop()
+        const matched = this.f.call(this, text)
+        const lines = code.split("\n")
+
+        if (matched) {
+            const linesOK = lines.length <= this.maxLines
+            const charsOK = code.length <= this.maxChars
+            this.setAchievement(1)
+            if (linesOK || charsOK) this.setAchievement(2)
+            if (linesOK && charsOK) this.setAchievement(3)
+        }
+
+        this.save()
+        this.display()
+    }
+
+    match(a, b) {
+        return JSON.stringify(a) == JSON.stringify(b)
+    }
+}
+
+/*********************************************************************
+ * Challenge buttons                                                **
+ *********************************************************************/
+
+function navigateChallenge(delta) {
+    const newIndex = currentChallengeIndex + delta;
+    if (newIndex >= 0 && newIndex < challenges.length) {
+        currentChallengeIndex = newIndex
+        window.challenge = challenges[currentChallengeIndex]
+        window.challenge.load()
+        window.challenge.display()
+    }
+}
+
+document.getElementById('btn-prev').addEventListener('click', () => {
+    navigateChallenge(-1)
+});
+
+document.getElementById('btn-next').addEventListener('click', () => {
+    navigateChallenge(1)
+});
+
+/*********************************************************************
+ * Editor toolbar                                                   **
+ *********************************************************************/
+
+document.getElementById('btn-clear').addEventListener('click', () => {
+    editor.setValue('');
+});
+
+document.getElementById('btn-run').addEventListener('click', () => {
+    localStorage.setItem("saved-code", editor.getValue());
+});
+
+document.getElementById('btn-save').addEventListener('click', () => {
+    const blob = new Blob([editor.getValue()], { type: 'text/x-python' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'script.py';
+    link.click();
+    URL.revokeObjectURL(link.href);
+});
+
+document.getElementById('btn-load').addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        editor.setValue(ev.target.result);
+    };
+    reader.readAsText(file);
+    fileInput.value = '';
+});
+
+const updateStats = () => {
+    const doc = editor.getDoc();
+    statsEl.textContent = `Lines: ${doc.lineCount()} | Characters: ${doc.getValue().length}`;
+};
+
+/*********************************************************************
+ * Initialisation                                                   **
+ *********************************************************************/
+    
+document.addEventListener('DOMContentLoaded', () => {
+    window.editor = CodeMirror(document.getElementById('editor'), {
+        mode: 'python',
+        theme: 'dracula',
+        lineNumbers: true,
+        indentUnit: 4,
+        tabSize: 4,
+        lineWrapping: true,
+        autofocus: true
+    });
+
+    editor.on('change', updateStats);
+    updateStats();
+
+    navigateChallenge(0)
+});
+
+Challenge.add(1, 22,
+    `Hello World!`,
+    `Print the text: Hello World!`,
+    function(i) {
+        return this.match(i, [ 'hello world!' ])
+    }
+)
+
+Challenge.add(1, 29,
+    `Count to Five`,
+    `Print numbers 1 through 5, each on its own line.`,
+    function(i) {
+        const values = i.map(x => parseInt(x, 10))
+        return this.match(values, [ 1, 2, 3, 4, 5 ])
+    }
+)
+
+Challenge.add(1, 31,
+    `Even Numbers`,
+    `Print even numbers from 2 to 10, each on a new line.`,
+    function(i) {
+        const values = i.map(x => parseInt(x, 10))
+        return this.match(values, [2, 4, 6, 8, 10])
+    }
+)
+
+Challenge.add(1, 9,
+    `Sum a List`,
+    `Print the sum of [1, 2, 3, 4, 5].`,
+    function(i) {
+        return this.match(i, [ 15 ])
+    }
+)
