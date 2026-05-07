@@ -70,14 +70,18 @@ class TerminalWriter:
 def run_code(ev):
     terminal.text = ""
     terminal.classList.remove("error")
-    code = editor.getValue()
+    code = editor.getValue().replace("\t", "    ")
 
     orig_out, orig_err = sys.stdout, sys.stderr
     tw = TerminalWriter()
     sys.stdout = sys.stderr = tw
 
     try:
-        exec(code, {"__name__": "__main__"})
+        env = {
+            "names" : [ "Jane", "Andrew", "Frederick", "Phillip", "Hanna", "Victoria" ]
+        }
+        env["__name__"] = "__main__"
+        exec(code, env)
     except Exception as e:
         print(f"Error: {e}")
     finally:

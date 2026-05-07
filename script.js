@@ -44,7 +44,7 @@ class Challenge {
     display() {
         editor.setValue(this.code)
         document.getElementById('challengeTitle').textContent = `Challenge ${this.id}: ${this.title}`;
-        document.getElementById('challengeDesc').textContent = this.description;
+        document.getElementById('challengeDesc').innerHTML = this.description;
         document.getElementById('maxLines').textContent = this.maxLines;
         document.getElementById('maxChars').textContent = this.maxChars;
         document.querySelectorAll('#medals .medal').forEach((el, i) => {
@@ -153,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lineNumbers: true,
         indentUnit: 4,
         tabSize: 4,
+        indentWithTabs: false,
         lineWrapping: true,
         autofocus: true
     });
@@ -196,3 +197,81 @@ Challenge.add(1, 9,
         return this.match(i, [ 15 ])
     }
 )
+
+Challenge.add(1, 41,
+    `Sorting by length`,
+    `
+    The variable <code>names</code> contains an array of names.
+    Print them in order from shortest to longest.
+    `,
+    function(i) {
+        return this.match(i, [[ "Jane", "Hanna", "Andrew", "Phillip",  "Victoria", "Frederick" ]]);
+    }
+)
+
+Challenge.add(2, 80,
+    `Fibonacci`,
+    `
+    Starting from 1, 1, print the first 20 numbers in the Fibonacci sequence.
+    Make sure each number is on a separate line.
+    `,
+    function(i) {
+        i = i.map(x => parseInt(x, 10))
+        const s = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765]
+        return this.match(i, s);
+    }
+)
+/*
+Challenge.add(5, 110,
+    `Prime Factors`,
+    `Find and print all prime factors of 60 in ascending order, one per line.`,
+    function(i) {
+        return this.match(i, ["2","2","3","5"]);
+    }
+)
+
+// 16. Run-Length Encoding
+Challenge.add(4, 100,
+    `String Compression`,
+    `Compress "AAABBC" into run-length format "A3B2C1" and print it.`,
+    function(i) {
+        return this.match(i, ["A3B2C1"]);
+    }
+)
+
+// 17. Set Operations
+Challenge.add(3, 70,
+    `Set Intersection & Union`,
+    `Given a={1,2,3,4,5}, b={4,5,6,7,8}, print sorted intersection then sorted union, space-separated on two lines.`,
+    function(i) {
+        return this.match(i, ["4 5","1 2 3 4 5 6 7 8"]);
+    }
+)
+
+// 18. CSV Data Parsing
+Challenge.add(4, 105,
+    `CSV Sorter`,
+    `Parse "Name,Age\nAlice,20\nBob,22\nCharlie,19". Print names sorted by age ascending.`,
+    function(i) {
+        return this.match(i, ["Charlie","Alice","Bob"]);
+    }
+)
+
+// 19. Generator Yield
+Challenge.add(4, 85,
+    `Power Generator`,
+    `Use a generator to yield powers of 2 (1 to 512). Print each value.`,
+    function(i) {
+        return this.match(i, ["1","2","4","8","16","32","64","128","256","512"]);
+    }
+)
+
+// 20. Hexadecimal Mapping
+Challenge.add(2, 50,
+    `Hex Mapping`,
+    `Print lowercase hexadecimal representations of integers 10 through 15.`,
+    function(i) {
+        return this.match(i, ["a","b","c","d","e","f"]);
+    }
+)
+*/
