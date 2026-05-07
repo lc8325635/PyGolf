@@ -53,18 +53,19 @@ class Challenge {
     }
 
     setAchievement(achievement) {
-        achievement = Math.max(this.achievement, achievement)
+        //achievement = Math.max(this.achievement, achievement)
         this.achievement = achievement
     }
 
     validate(code, text) {
         this.code = code
         text = text.toString().split(/\n/)
-        text = text.map(line => line.trim())
+        text = text.map(line => line.trim().toLowerCase())
         while (text.length > 0 && text[text.length - 1] == "") text.pop()
         const matched = this.f.call(this, text)
         const lines = code.split("\n")
 
+        this.setAchievement(0)
         if (matched) {
             const linesOK = lines.length <= this.maxLines
             const charsOK = code.length <= this.maxChars
