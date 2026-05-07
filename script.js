@@ -80,6 +80,11 @@ class Challenge {
     match(a, b) {
         return JSON.stringify(a) == JSON.stringify(b)
     }
+
+    matchInts(a, b) {
+        a = a.map(x => parseInt(x, 10))
+        return this.match(a, b)
+    }
 }
 
 /*********************************************************************
@@ -176,8 +181,7 @@ Challenge.add(1, 29,
     `Count to Five`,
     `Print numbers 1 through 5, each on its own line.`,
     function(i) {
-        const values = i.map(x => parseInt(x, 10))
-        return this.match(values, [ 1, 2, 3, 4, 5 ])
+        return this.matchInts(i, [ 1, 2, 3, 4, 5 ])
     }
 )
 
@@ -185,8 +189,7 @@ Challenge.add(1, 31,
     `Even Numbers`,
     `Print even numbers from 2 to 10, each on a new line.`,
     function(i) {
-        const values = i.map(x => parseInt(x, 10))
-        return this.match(values, [2, 4, 6, 8, 10])
+        return this.matchInts(i, [2, 4, 6, 8, 10])
     }
 )
 
@@ -194,8 +197,7 @@ Challenge.add(1, 9,
     `Sum a List`,
     `Print the sum of [1, 2, 3, 4, 5].`,
     function(i) {
-        i = i.map(x => parseInt(x, 10))
-        return this.match(i, [15])
+        return this.matchInts(i, [15])
     }
 )
 
@@ -218,18 +220,19 @@ Challenge.add(2, 80,
     `,
     function(i) {
         i = i.map(x => parseInt(x, 10))
-        const s = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765]
-        return this.match(i, s);
+        return this.matchInts(i, s);
     }
 )
-/*
-Challenge.add(5, 110,
+
+Challenge.add(4, 100,
     `Prime Factors`,
-    `Find and print all prime factors of 60 in ascending order, one per line.`,
+    `Print all prime numbers below 100, in ascending order, one per line.`,
     function(i) {
-        return this.match(i, ["2","2","3","5"]);
+        return this.matchInts(i, [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97]);
     }
 )
+
+/*
 
 // 16. Run-Length Encoding
 Challenge.add(4, 100,
