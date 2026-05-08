@@ -23,10 +23,6 @@
                 <button id="btn-next">→</button>
             </div>
             <div id="challengeDesc" class="challenge-desc"></div>
-            <div class="challenge-limits">
-                <span>Max Lines: <strong id="maxLines">–</strong></span> | 
-                <span>Max Chars: <strong id="maxChars">–</strong></span>
-            </div>
             <div class="medals" id="medals">
                 <span class="medal bronze" title="Bronze: Correct output">🥉</span>
                 <span class="medal silver" title="Silver: + Within line OR char limit">🥈</span>
@@ -36,7 +32,10 @@
         
         <header>
             <h1>Your Python Program</h1>
-            <div class="stats" id="statsEl">Lines: 0 | Characters: 0</div>
+            <div class="stats" id="statsEl">
+                <span id="curChars" class="stat"></span>, <span id="curLines" class="stat"></span> 
+                (Goal: <span id="maxChars"></span>, <span id="maxLines"></span>)
+            </div>
         </header>
         
         <div class="toolbar">
@@ -49,10 +48,19 @@
         <div id="editor"></div>
 
         <div class="terminal" id="terminal"></div>
+
+        <div id="feedback-dialog" class="dialog-overlay">
+            <div class="dialog-content">
+                <h3 id="feedback-dialog-title">Challenge Complete</h3>
+                <p id="feedback-dialog-message"></p>
+                <button id="feedback-dialog-ok">Close</button>
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
     <script type="text/python">
 from browser import document, window
+import json
 import sys
 
 editor = window.editor
@@ -76,17 +84,17 @@ def run_code(ev):
     tw = TerminalWriter()
     sys.stdout = sys.stderr = tw
 
+    env_json = window.challenge.createEnv()
+    env = json.loads(env_json)
+    env["__name__"] = "__main__"
+
     try:
-        env = {
-            "names" : [ "Jane", "Andrew", "Frederick", "Phillip", "Hanna", "Victoria" ]
-        }
-        env["__name__"] = "__main__"
         exec(code, env)
     except Exception as e:
         print(f"Error: {e}")
     finally:
         sys.stdout, sys.stderr = orig_out, orig_err
-        window.challenge.validate(code, terminal.text)
+    window.challenge.validate(code, terminal.text, env_json)
 
 document["btn-run"].bind("click", run_code)
     </script>
